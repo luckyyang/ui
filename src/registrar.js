@@ -12,6 +12,11 @@ import {
   getSigner,
   getNetworkId
 } from './web3'
+
+import {
+  getAddress
+} from './registry'
+
 import { Contract } from 'ethers'
 import { abi as legacyAuctionRegistrarContract } from '@ensdomains/ens/build/contracts/HashRegistrar'
 import { abi as deedContract } from '@ensdomains/ens/build/contracts/Deed'
@@ -129,7 +134,7 @@ const getLegacyEntry = async (Registrar, name) => {
       deedOwner = await deed.owner()
     }
     obj = {
-      deedOwner,
+      deedOwner, // TODO: Display "Release" button if deedOwner is not 0x0
       state: parseInt(entry[0]),
       registrationDate: parseInt(entry[2]) * 1000,
       revealDate: (parseInt(entry[2]) - 24 * 2 * 60 * 60) * 1000,
@@ -152,13 +157,6 @@ const getLegacyEntry = async (Registrar, name) => {
 }
 
 // Caching because they are constant
-
-async function getMigrationLockPeriod(Registrar) {
-  if (!migrationLockPeriod) {
-    return Registrar.MIGRATION_LOCK_PERIOD()
-  }
-  return migrationLockPeriod
-}
 
 async function getGracePeriod(Registrar) {
   if (!gracePeriod) {
@@ -191,26 +189,16 @@ const getPermanentEntry = async (Registrar, RegistrarController, label) => {
       getAvailable = RegistrarController.available(label)
     }
 
-    const [
-      available,
-      transferPeriodEnds,
-      nameExpires,
-      gracePeriod,
-      migrationLockPeriod
-    ] = await Promise.all([
+    const [available, nameExpires, gracePeriod] = await Promise.all([
       getAvailable,
-      Registrar.transferPeriodEnds(),
       Registrar.nameExpires(labelHash),
-      getGracePeriod(Registrar),
-      getMigrationLockPeriod(Registrar)
+      getGracePeriod(Registrar)
     ])
 
     obj = {
       ...obj,
-      migrationLockPeriod: parseInt(migrationLockPeriod),
       available,
       gracePeriod,
-      transferPeriodEnds,
       nameExpires: nameExpires > 0 ? new Date(nameExpires * 1000) : null
     }
     // Returns registrar address if owned by new registrar.
@@ -316,17 +304,6 @@ const getEntry = async name => {
   }
 
   if (permEntry) {
-    if (legacyEntry.registrationDate && permEntry.migrationLockPeriod) {
-      ret.migrationStartDate = new Date(
-        legacyEntry.registrationDate + permEntry.migrationLockPeriod * 1000
-      )
-    } else {
-      ret.migrationStartDate = null
-    }
-
-    if (permEntry.transferPeriodEnds) {
-      ret.transferEndDate = new Date(permEntry.transferPeriodEnds * 1000)
-    }
     ret.available = permEntry.available
     if (permEntry.nameExpires) {
       ret.expiryTime = permEntry.nameExpires
@@ -429,7 +406,19 @@ const makeCommitment = async (name, owner, secret = '') => {
   const permanentRegistrarController = permanentRegistrarControllerWithoutSigner.connect(
     signer
   )
-  return permanentRegistrarController.makeCommitment(name, owner, secret)
+  const account = await getAccount()
+  const resolverAddr = await getAddress('resolver.eth')
+  if (parseInt(resolverAddr, 16) === 0) {
+    return permanentRegistrarController.makeCommitment(name, owner, secret)
+  } else {
+    return permanentRegistrarController.makeCommitmentWithConfig(
+      name,
+      owner,
+      secret,
+      resolverAddr,
+      account
+    )
+  }
 }
 
 const commit = async (label, secret = '') => {
@@ -456,14 +445,26 @@ const register = async (label, duration, secret) => {
   )
   const account = await getAccount()
   const price = await getRentPrice(label, duration)
-
-  return permanentRegistrarController.register(
-    label,
-    account,
-    duration,
-    secret,
-    { value: price }
-  )
+  const resolverAddr = await getAddress('resolver.eth')
+  if (parseInt(resolverAddr, 16) === 0) {
+    return permanentRegistrarController.register(
+      label,
+      account,
+      duration,
+      secret,
+      { value: price }
+    )
+  } else {
+    return permanentRegistrarController.registerWithConfig(
+      label,
+      account,
+      duration,
+      secret,
+      resolverAddr,
+      account,
+      { value: price }
+    )
+  }
 }
 
 const renew = async (label, duration) => {
@@ -477,14 +478,6 @@ const renew = async (label, duration) => {
   const price = await getRentPrice(label, duration)
 
   return permanentRegistrarController.renew(label, duration, { value: price })
-}
-
-const transferRegistrars = async label => {
-  const { ethRegistrar } = await getLegacyAuctionRegistrar()
-  const signer = await getSigner()
-  const ethRegistrarWithSigner = ethRegistrar.connect(signer)
-  const hash = labelhash(label)
-  return ethRegistrarWithSigner.transferRegistrars(hash)
 }
 
 const releaseDeed = async label => {
@@ -523,7 +516,6 @@ export {
   commit,
   register,
   renew,
-  transferRegistrars,
   releaseDeed,
   submitProof
 }

@@ -42,6 +42,12 @@ export async function getResolver(name) {
   return ENS.resolver(namehash)
 }
 
+export async function getTTL(name) {
+  const namehash = getNamehash(name)
+  const ENS = await getENS()
+  return ENS.ttl(namehash)
+}
+
 export async function getResolverWithLabelhash(labelhash, nodehash) {
   let ENS = await getENS()
   const namehash = await getNamehashWithLabelHash(labelhash, nodehash)
@@ -207,17 +213,35 @@ export async function setOwner(name, newOwner) {
   return ENS.setOwner(namehash, newOwner)
 }
 
-export async function setSubnodeOwner(unnormalizedName, newOwner) {
+export async function setSubnodeOwner(name, newOwner) {
   const ENSWithoutSigner = await getENS()
   const signer = await getSigner()
   const ENS = ENSWithoutSigner.connect(signer)
-  const name = normalize(unnormalizedName)
   const nameArray = name.split('.')
   const label = nameArray[0]
   const node = nameArray.slice(1).join('.')
   const labelhash = getLabelhash(label)
   const parentNamehash = getNamehash(node)
   return ENS.setSubnodeOwner(parentNamehash, labelhash, newOwner)
+}
+
+export async function setSubnodeRecord(name, newOwner, resolver) {
+  const ENSWithoutSigner = await getENS()
+  const signer = await getSigner()
+  const ENS = ENSWithoutSigner.connect(signer)
+  const nameArray = name.split('.')
+  const label = nameArray[0]
+  const node = nameArray.slice(1).join('.')
+  const labelhash = getLabelhash(label)
+  const parentNamehash = getNamehash(node)
+  const ttl = await getTTL(name)
+  return ENS.setSubnodeRecord(
+    parentNamehash,
+    labelhash,
+    newOwner,
+    resolver,
+    ttl
+  )
 }
 
 export async function setResolver(name, resolver) {
@@ -417,6 +441,12 @@ export async function getDomainDetails(name) {
     addr: null,
     content: null
   }
+}
+
+export const isMigrated = async name => {
+  const ENS = await getENS()
+  const namehash = getNamehash(name)
+  return await ENS.recordExists(namehash)
 }
 
 export const getSubdomains = async name => {

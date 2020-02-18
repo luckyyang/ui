@@ -3,8 +3,10 @@ import { Contract, utils } from 'ethers'
 import { getWeb3, getNetworkId, getProvider } from './web3'
 import { normalize } from 'eth-ens-namehash'
 import { namehash } from './utils'
+import { labelhash } from './utils'
 import { abi as ensContract } from '@ensdomains/ens/build/contracts/ENS.json'
 import { abi as reverseRegistrarContract } from '@ensdomains/ens/build/contracts/ReverseRegistrar.json'
+import { abi as oldResolverContract } from '@ensdomains/ens-022/build/contracts/PublicResolver.json'
 import { abi as resolverContract } from '@ensdomains/resolver/build/contracts/Resolver.json'
 import { abi as fifsRegistrarContract } from '@ensdomains/ens/build/contracts/FIFSRegistrar.json'
 import { abi as testRegistrarContract } from '@ensdomains/ens/build/contracts/TestRegistrar.json'
@@ -12,16 +14,16 @@ import { abi as dnsRegistrarContract } from '@ensdomains/dnsregistrar/build/cont
 
 var contracts = {
   1: {
-    registry: '0x314159265dd8dbb310642f98f50c066173c1259b'
+    registry: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e'
   },
   3: {
-    registry: '0x112234455c3a32fd11230c42e7bccd4a84e02010'
+    registry: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e'
   },
   4: {
-    registry: '0xe7410170f87102df0055eb195163a03b7f2bff4a'
+    registry: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e'
   },
   5: {
-    registry: '0x112234455c3a32fd11230c42e7bccd4a84e02010'
+    registry: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e'
   }
 }
 
@@ -37,7 +39,7 @@ async function getNamehashWithLabelHash(labelHash, nodeHash) {
 }
 
 function getLabelhash(label) {
-  return utils.solidityKeccak256(['string'], [label])
+  return labelhash(label)
 }
 
 async function getReverseRegistrarContract() {
@@ -57,7 +59,14 @@ async function getReverseRegistrarContract() {
 
 async function getResolverContract(addr) {
   const provider = await getProvider()
-  return new Contract(addr, resolverContract, provider)
+  const resolver = new Contract(addr, resolverContract, provider)
+  return resolver
+}
+
+async function getOldResolverContract(addr) {
+  const provider = await getProvider()
+  const resolver = new Contract(addr, oldResolverContract, provider)
+  return resolver
 }
 
 async function getENSContract() {
@@ -163,6 +172,7 @@ export {
   getNamehash,
   getNamehashWithLabelHash,
   getResolverContract,
+  getOldResolverContract,
   getDnsRegistrarContract,
   getFifsRegistrarContract,
   normalize
