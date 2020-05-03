@@ -39,7 +39,7 @@ let gracePeriod
 
 const getEthResolver = async () => {
   const ENS = await getENS()
-  const resolverAddr = await ENS.resolver(getNamehash('eth'))
+  const resolverAddr = await ENS.resolver(getNamehash('ela'))
   return getResolverContract(resolverAddr)
 }
 
@@ -58,7 +58,7 @@ export const getLegacyAuctionRegistrar = async () => {
     const Resolver = await getEthResolver()
     const provider = await getProvider()
     let legacyAuctionRegistrarAddress = await Resolver.interfaceImplementer(
-      getNamehash('eth'),
+      getNamehash('ela'),
       legacyRegistrarInterfaceId
     )
 
@@ -84,7 +84,7 @@ export const getPermanentRegistrar = async () => {
   try {
     const ENS = await getENS()
     const provider = await getProvider()
-    const ethAddr = await ENS.owner(getNamehash('eth'))
+    const ethAddr = await ENS.owner(getNamehash('ela'))
     permanentRegistrar = new Contract(
       ethAddr,
       permanentRegistrarContract,
@@ -107,7 +107,7 @@ export const getPermanentRegistrarController = async () => {
     const Resolver = await getEthResolver()
     const provider = await getProvider()
     let controllerAddress = await Resolver.interfaceImplementer(
-      getNamehash('eth'),
+      getNamehash('ela'),
       permanentRegistrarInterfaceId
     )
     permanentRegistrarController = new Contract(
