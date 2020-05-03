@@ -407,7 +407,7 @@ const makeCommitment = async (name, owner, secret = '') => {
     signer
   )
   const account = await getAccount()
-  const resolverAddr = await getAddress('resolver.eth')
+  const resolverAddr = await getAddress('resolver.ela')
   if (parseInt(resolverAddr, 16) === 0) {
     return permanentRegistrarController.makeCommitment(name, owner, secret)
   } else {
@@ -445,7 +445,7 @@ const register = async (label, duration, secret) => {
   )
   const account = await getAccount()
   const price = await getRentPrice(label, duration)
-  const resolverAddr = await getAddress('resolver.eth')
+  const resolverAddr = await getAddress('resolver.ela')
   if (parseInt(resolverAddr, 16) === 0) {
     return permanentRegistrarController.register(
       label,
