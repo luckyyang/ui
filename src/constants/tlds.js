@@ -16,5 +16,8 @@ export const tlds = {
   },
   art: {
     supported: true
+  },
+  ela: {
+    supported: true
   }
 }
