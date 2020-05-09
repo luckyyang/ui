@@ -408,17 +408,7 @@ const makeCommitment = async (name, owner, secret = '') => {
   )
   const account = await getAccount()
   const resolverAddr = await getAddress('resolver.ela')
-  if (parseInt(resolverAddr, 16) === 0) {
-    return permanentRegistrarController.makeCommitment(name, owner, secret)
-  } else {
-    return permanentRegistrarController.makeCommitmentWithConfig(
-      name,
-      owner,
-      secret,
-      resolverAddr,
-      account
-    )
-  }
+  return permanentRegistrarController.makeCommitment(name, owner, secret)
 }
 
 const commit = async (label, secret = '') => {
@@ -446,25 +436,13 @@ const register = async (label, duration, secret) => {
   const account = await getAccount()
   const price = await getRentPrice(label, duration)
   const resolverAddr = await getAddress('resolver.ela')
-  if (parseInt(resolverAddr, 16) === 0) {
-    return permanentRegistrarController.register(
-      label,
-      account,
-      duration,
-      secret,
-      { value: price }
-    )
-  } else {
-    return permanentRegistrarController.registerWithConfig(
-      label,
-      account,
-      duration,
-      secret,
-      resolverAddr,
-      account,
-      { value: price }
-    )
-  }
+  return permanentRegistrarController.register(
+    label,
+    account,
+    duration,
+    secret,
+    { value: price }
+  )
 }
 
 const renew = async (label, duration) => {
