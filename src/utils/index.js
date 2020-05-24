@@ -103,7 +103,7 @@ const parseSearchTerm = term => {
     const tld = term.match(regex) ? term.match(regex)[0] : ''
 
     if (tlds[tld] && tlds[tld].supported) {
-      if (tld === 'ela' && termArray[termArray.length - 2].length < 3) {
+      if (tld === 'ela' && termArray[termArray.length - 2].length <= 3) {
         return 'short'
       }
       return 'supported'
