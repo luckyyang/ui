@@ -14,16 +14,16 @@ import { abi as dnsRegistrarContract } from '@ensdomains/dnsregistrar/build/cont
 
 var contracts = {
   1: {
-    registry: '0x3016c8D61b6821ABE1E6b19FddfF38ff2eC55f2a'
+    registry: '0x06846F74959cC34b5b5985E3FEf1a0B1642309d2'
   },
   3: {
-    registry: '0x3016c8D61b6821ABE1E6b19FddfF38ff2eC55f2a'
+    registry: '0x06846F74959cC34b5b5985E3FEf1a0B1642309d2'
   },
   4: {
-    registry: '0x3016c8D61b6821ABE1E6b19FddfF38ff2eC55f2a'
+    registry: '0x06846F74959cC34b5b5985E3FEf1a0B1642309d2'
   },
   5: {
-    registry: '0x3016c8D61b6821ABE1E6b19FddfF38ff2eC55f2a'
+    registry: '0x06846F74959cC34b5b5985E3FEf1a0B1642309d2'
   }
 }
 
