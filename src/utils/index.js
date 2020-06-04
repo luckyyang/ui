@@ -31,15 +31,15 @@ async function getEtherScanAddr() {
   switch (networkId) {
     case 1:
     case '1':
-      return 'https://etherscan.io/'
+      return 'https://testnet.elaeth.io/'
     case 3:
     case '3':
-      return 'https://ropsten.etherscan.io/'
+      return 'https://testnet.elaeth.io/'
     case 4:
     case '4':
-      return 'https://rinkeby.etherscan.io/'
+      return 'https://testnet.elaeth.io/'
     default:
-      return 'https://etherscan.io/'
+      return 'https://testnet.elaeth.io/'
   }
 }
 
@@ -103,7 +103,7 @@ const parseSearchTerm = term => {
     const tld = term.match(regex) ? term.match(regex)[0] : ''
 
     if (tlds[tld] && tlds[tld].supported) {
-      if (tld === 'eth' && termArray[termArray.length - 2].length < 3) {
+      if (tld === 'ela' && termArray[termArray.length - 2].length <= 3) {
         return 'short'
       }
       return 'supported'

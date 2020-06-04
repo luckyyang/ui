@@ -90,7 +90,7 @@ describe('Blockchain tests', () => {
     test('ens registry, resolver and reverse registrar deployed', async () => {
       const ENS = await getENS()
 
-      const eth = getNamehash('eth')
+      const eth = getNamehash('ela')
       const ethOwner = await ENS.owner(eth)
       expect(ethOwner).toBe(baseRegistrar)
 

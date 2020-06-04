@@ -39,7 +39,7 @@ let gracePeriod
 
 const getEthResolver = async () => {
   const ENS = await getENS()
-  const resolverAddr = await ENS.resolver(getNamehash('eth'))
+  const resolverAddr = await ENS.resolver(getNamehash('ela'))
   return getResolverContract(resolverAddr)
 }
 
@@ -58,7 +58,7 @@ export const getLegacyAuctionRegistrar = async () => {
     const Resolver = await getEthResolver()
     const provider = await getProvider()
     let legacyAuctionRegistrarAddress = await Resolver.interfaceImplementer(
-      getNamehash('eth'),
+      getNamehash('ela'),
       legacyRegistrarInterfaceId
     )
 
@@ -84,7 +84,7 @@ export const getPermanentRegistrar = async () => {
   try {
     const ENS = await getENS()
     const provider = await getProvider()
-    const ethAddr = await ENS.owner(getNamehash('eth'))
+    const ethAddr = await ENS.owner(getNamehash('ela'))
     permanentRegistrar = new Contract(
       ethAddr,
       permanentRegistrarContract,
@@ -107,7 +107,7 @@ export const getPermanentRegistrarController = async () => {
     const Resolver = await getEthResolver()
     const provider = await getProvider()
     let controllerAddress = await Resolver.interfaceImplementer(
-      getNamehash('eth'),
+      getNamehash('ela'),
       permanentRegistrarInterfaceId
     )
     permanentRegistrarController = new Contract(
@@ -407,18 +407,8 @@ const makeCommitment = async (name, owner, secret = '') => {
     signer
   )
   const account = await getAccount()
-  const resolverAddr = await getAddress('resolver.eth')
-  if (parseInt(resolverAddr, 16) === 0) {
-    return permanentRegistrarController.makeCommitment(name, owner, secret)
-  } else {
-    return permanentRegistrarController.makeCommitmentWithConfig(
-      name,
-      owner,
-      secret,
-      resolverAddr,
-      account
-    )
-  }
+  const resolverAddr = await getAddress('resolver.ela')
+  return permanentRegistrarController.makeCommitment(name, owner, secret)
 }
 
 const commit = async (label, secret = '') => {
@@ -445,26 +435,14 @@ const register = async (label, duration, secret) => {
   )
   const account = await getAccount()
   const price = await getRentPrice(label, duration)
-  const resolverAddr = await getAddress('resolver.eth')
-  if (parseInt(resolverAddr, 16) === 0) {
-    return permanentRegistrarController.register(
-      label,
-      account,
-      duration,
-      secret,
-      { value: price }
-    )
-  } else {
-    return permanentRegistrarController.registerWithConfig(
-      label,
-      account,
-      duration,
-      secret,
-      resolverAddr,
-      account,
-      { value: price }
-    )
-  }
+  const resolverAddr = await getAddress('resolver.ela')
+  return permanentRegistrarController.register(
+    label,
+    account,
+    duration,
+    secret,
+    { value: price }
+  )
 }
 
 const renew = async (label, duration) => {

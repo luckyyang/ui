@@ -114,13 +114,13 @@ export function isReadOnly() {
 function getNetworkProviderUrl(id) {
   switch (id) {
     case '1':
-      return `https://mainnet.infura.io/v3/90f210707d3c450f847659dc9a3436ea`
+      return `https://rpc.elaeth.io`
     case '3':
-      return `https://ropsten.infura.io/v3/90f210707d3c450f847659dc9a3436ea`
+      return `https://rpc.elaeth.io`
     case '4':
-      return `https://rinkeby.infura.io/v3/90f210707d3c450f847659dc9a3436ea`
+      return `https://rpc.elaeth.io`
     case '5':
-      return `https://goerli.infura.io/v3/90f210707d3c450f847659dc9a3436ea`
+      return `https://rpc.elaeth.io`
     default:
       return 'private'
   }

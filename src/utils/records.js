@@ -24,7 +24,7 @@ export function validateRecord(record) {
 export function getPlaceholder(recordType, contentType) {
   switch (recordType) {
     case 'address':
-      return 'Enter an Ethereum address'
+      return 'Enter an Elastos address'
     case 'content':
       if (contentType === 'contenthash') {
         return 'Enter a content hash (eg: ipfs://..., bzz://..., onion://..., onion3://...)'
