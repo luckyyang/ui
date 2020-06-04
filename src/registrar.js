@@ -203,7 +203,7 @@ const getPermanentEntry = async (Registrar, RegistrarController, label) => {
     }
     // Returns registrar address if owned by new registrar.
     // Keep it as a separate call as this will throw exception for non existing domains
-    obj.ownerOf = await Registrar.ownerOf(labelHash)
+    obj.ownerOf = await getOwnerOf(labelHash)
   } catch (e) {
     console.log('Error getting permanent registrar entry', e)
     return false
